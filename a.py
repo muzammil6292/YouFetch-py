@@ -52,7 +52,11 @@ def get_video_info():
         return jsonify(video_info)
         
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        error_message = str(e)
+        if 'Video unavailable' in error_message or "This content isn't available" in error_message:
+            user_friendly = 'This video is unavailable. It may be private, deleted, region-locked, or age-restricted.'
+            return jsonify({'error': user_friendly}), 400
+        return jsonify({'error': error_message}), 500
 
 @app.route('/api/download', methods=['POST'])
 def download_video():
@@ -136,7 +140,11 @@ def download_video():
             return jsonify({'error': 'Download completed but file not found'}), 500
             
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        error_message = str(e)
+        if 'Video unavailable' in error_message or "This content isn't available" in error_message:
+            user_friendly = 'This video is unavailable. It may be private, deleted, region-locked, or age-restricted.'
+            return jsonify({'error': user_friendly}), 400
+        return jsonify({'error': error_message}), 500
 
 @app.route('/api/list-downloads', methods=['GET'])
 def list_downloads():
