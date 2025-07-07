@@ -6,6 +6,7 @@ import os
 import tempfile
 import json
 from datetime import datetime
+import re
 
 app = Flask(__name__)
 CORS(app)  # Enable cross-origin requests
@@ -30,6 +31,11 @@ def get_video_info():
         
         if not url:
             return jsonify({'error': 'URL is required'}), 400
+        
+        # Sanitize URL: keep only the base YouTube video URL
+        match = re.match(r'(https?://(?:www\.)?(?:youtube\.com/watch\?v=|youtu\.be/)[^&?]+)', url)
+        if match:
+            url = match.group(1)
         
         ydl_opts = {
             'quiet': True,
@@ -69,6 +75,11 @@ def download_video():
         
         if not url:
             return jsonify({'error': 'URL is required'}), 400
+        
+        # Sanitize URL: keep only the base YouTube video URL
+        match = re.match(r'(https?://(?:www\.)?(?:youtube\.com/watch\?v=|youtu\.be/)[^&?]+)', url)
+        if match:
+            url = match.group(1)
         
         # Map quality to yt-dlp format
         quality_map = {
