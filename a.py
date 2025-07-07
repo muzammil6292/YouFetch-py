@@ -41,6 +41,9 @@ def get_video_info():
             'quiet': True,
             'no_warnings': True,
         }
+        # Use cookies.txt if it exists
+        if os.path.exists('cookies.txt'):
+            ydl_opts['cookiefile'] = 'cookies.txt'
         
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
             info = ydl.extract_info(url, download=False)
@@ -103,7 +106,9 @@ def download_video():
             'outtmpl': os.path.join(DOWNLOAD_FOLDER, f'%(title)s_{timestamp}.%(ext)s'),
             # 'restrictfilenames': True,  # Removed to allow full video titles in filenames
         }
-        
+        # Use cookies.txt if it exists
+        if os.path.exists('cookies.txt'):
+            ydl_opts['cookiefile'] = 'cookies.txt'
         # For audio downloads, add post-processor
         if quality == 'audio':
             ydl_opts['postprocessors'] = [{
