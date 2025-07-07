@@ -101,7 +101,7 @@ def download_video():
         ydl_opts = {
             'format': format_selector,
             'outtmpl': os.path.join(DOWNLOAD_FOLDER, f'%(title)s_{timestamp}.%(ext)s'),
-            'restrictfilenames': True,  # Avoid special characters
+            # 'restrictfilenames': True,  # Removed to allow full video titles in filenames
         }
         
         # For audio downloads, add post-processor
