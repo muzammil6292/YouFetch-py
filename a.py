@@ -159,22 +159,31 @@ def download_video():
 
 @app.route('/api/list-downloads', methods=['GET'])
 def list_downloads():
-    """List all downloaded files"""
+    """List all downloaded files modified within the last 15 minutes and delete older files"""
     try:
         files = []
+        now = datetime.now().timestamp()
+        max_age_seconds = 15 * 60  # 15 minutes
         if os.path.exists(DOWNLOAD_FOLDER):
             for filename in os.listdir(DOWNLOAD_FOLDER):
                 file_path = os.path.join(DOWNLOAD_FOLDER, filename)
                 if os.path.isfile(file_path):
-                    file_info = {
-                        'filename': filename,
-                        'size': os.path.getsize(file_path),
-                        'modified': os.path.getmtime(file_path)
-                    }
-                    files.append(file_info)
-        
+                    modified = os.path.getmtime(file_path)
+                    age = now - modified
+                    if age <= max_age_seconds:
+                        file_info = {
+                            'filename': filename,
+                            'size': os.path.getsize(file_path),
+                            'modified': modified
+                        }
+                        files.append(file_info)
+                    else:
+                        # Delete files older than 15 minutes
+                        try:
+                            os.remove(file_path)
+                        except Exception:
+                            pass  # Ignore errors when deleting
         return jsonify({'files': files})
-        
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
