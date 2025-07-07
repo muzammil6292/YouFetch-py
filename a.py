@@ -111,7 +111,20 @@ def download_video():
             filename = downloaded_files[0]
             file_path = os.path.join(DOWNLOAD_FOLDER, filename)
             file_size = os.path.getsize(file_path)
-            
+
+            # If not mp4, convert to mp4 using ffmpeg
+            base, ext = os.path.splitext(filename)
+            if ext.lower() != '.mp4':
+                mp4_filename = base + '.mp4'
+                mp4_file_path = os.path.join(DOWNLOAD_FOLDER, mp4_filename)
+                # Convert to mp4 using ffmpeg
+                os.system(f'ffmpeg -y -i "{file_path}" -c:v copy -c:a aac "{mp4_file_path}"')
+                # Optionally, remove the original file
+                # os.remove(file_path)
+                filename = mp4_filename
+                file_path = mp4_file_path
+                file_size = os.path.getsize(file_path)
+
             return jsonify({
                 'status': 'success',
                 'filename': filename,
